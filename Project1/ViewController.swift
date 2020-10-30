@@ -28,7 +28,7 @@ class ViewController: UITableViewController {
         }
         print(pictures.sort())
         // Do any additional setup after loading the view.
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(suggest))
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -50,9 +50,11 @@ class ViewController: UITableViewController {
         }
     }
     
-    @objc func shareTapped() {
+    @objc func suggest() {
+        
+        let shareLink = "Try it: https://github.com/CarmenMorado/StormViewer"
 
-        let vc = UIActivityViewController(activityItems: ["Reccommend this app!"], applicationActivities: [])
+        let vc = UIActivityViewController(activityItems: [shareLink], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
     }
