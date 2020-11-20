@@ -13,3 +13,5 @@ picture’s position in the array. Make sure you count from 1 rather than 0.
 And the following (project 3) challenges:
 -Try adding the image name to the list of items that are shared. The activityItems parameter is an array, so you can add strings and other things freely. Note: Facebook won’t let you share text, but most other share options will.
 -Go back to project 1 and add a bar button item to the main view controller that recommends the app to other people.
+
+![ezgif-4-bfedffbfe483](https://user-images.githubusercontent.com/42749527/99858954-acbd3a00-2b5c-11eb-8741-03f847b2c9e8.gif)
