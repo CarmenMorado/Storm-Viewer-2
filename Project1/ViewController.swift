@@ -7,8 +7,10 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
+class ViewController: UICollectionViewController {
+    var images = [Image]()
     var pictures = [String]()
+    var pictures2 = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,6 +20,8 @@ class ViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(suggest))
+        
+        collectionView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
         
         performSelector(inBackground: #selector(loadImages), with: nil)
     }
@@ -30,39 +34,55 @@ class ViewController: UITableViewController {
             if item.hasPrefix("nssl") {
                 // this is a picture to load!
                 pictures.append(item)
+                
+                let image = Image(name: item, image: item)
+                images.append(image)
             }
         }
         
-        print(pictures.sort())
+       pictures2 = pictures
+       pictures2.sort()
         
         DispatchQueue.main.async {
-            self.tableView.reloadData()
+            self.collectionView.reloadData()
         }
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pictures.count
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return pictures2.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
-        cell.textLabel?.text = pictures[indexPath.row]
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Image", for: indexPath) as? ImageCell else {
+            // we failed to get a PersonCell – bail out!
+            fatalError("Unable to dequeue PersonCell.")
+        }
+        
+        let image = images[indexPath.item]
+        cell.name.text = pictures2[indexPath.row]
+        cell.imageView.image = UIImage(named: image.name)
+        
+        cell.imageView.layer.borderColor = UIColor(white: 0, alpha: 0.3).cgColor
+        cell.imageView.layer.borderWidth = 2
+        cell.imageView.layer.cornerRadius = 3
+        cell.layer.cornerRadius = 7
+
+        // if we're still here it means we got a PersonCell, so we can return it
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let image = images[indexPath.item]
         if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController{
-            vc.selectedImage = pictures[indexPath.row]
+            vc.selectedImage = image.name
             vc.selectedPictureNumber = indexPath.row + 1
-            vc.totalPictures = pictures.count
+            vc.totalPictures = pictures2.count
             navigationController?.pushViewController(vc, animated: true)
         }
     }
     
     @objc func suggest() {
-        
         let shareLink = "Try it: https://github.com/CarmenMorado/StormViewer"
-
         let vc = UIActivityViewController(activityItems: [shareLink], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
